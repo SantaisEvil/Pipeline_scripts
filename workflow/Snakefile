@@ -1,0 +1,44 @@
+import os
+import glob
+from scripts.clean_names import clean_names
+
+configfile: "/home/sven/Data/scripts/snakemake_scripts/chipseq/config/config.yaml"
+include: "rules/mapping.smk"
+include: "rules/qc.smk"
+include: "rules/filtering.smk"
+include: "rules/bamToBw.smk"
+include: "rules/macs.smk"
+include: 'rules/trimming.smk'
+#include: 'rules/spikein.smk'
+
+
+ruleorder: atria_trim_PE > fastqc > bowtie2_PE > assembleStats
+
+clean_names('data')
+samples,reads = glob_wildcards("data/{sample}_{read}.fastq.gz")
+non_gst = [x for x in samples if 'gst' not in x.lower()]
+#cells,marks,conditions,read = glob_wildcards("data/{cell_line}_{mark}_{condition}_{read}.fastq.gz")
+
+AlignmentFiles = ["unfiltered_aligned.sam","Aligned.sortedByCoord.out.bam","unfiltered_aligned_stats.tsv","dupMetrics.tsv","dupMetricsFiltered.tsv","aligned_markDup.bam", "aligned.primary.rmdup.bam", "aligned.primary.rmdup.bam.bai"]
+
+#Sample = [x for x in Sample[0]]
+#print(expand("pre-analysis/{sample}/bowtie2/{file}", sample=Sample, file = AlignmentFiles ))
+
+rule all:
+    input:
+        expand("pre-analysis/ucsc/{file}",file= [config["ref"]["build"] + "/" + "trackDb.txt","genomes.txt","hub.txt"]),
+        expand('data_trimmed/{sample}_{read}.atria.fastq.gz',sample=samples,read=reads),
+        expand("pre-analysis/{sample}/fastqc/{sample}_{read}.atria_fastqc.{extension}", sample=samples,read=reads,extension=["zip","html"]),
+
+        #expand("pre-analysis/{sample}/fastqc/{sample}_{read}_fastqc.{extension}", sample=Sample,read=Read,extension=["zip","html"]),
+        expand("pre-analysis/{sample}/bowtie2/{file}", sample=samples, file = AlignmentFiles ),
+        #expand("pre-analysis/{sample}/bowtie2_dros/{file}", sample=samples, file = AlignmentFiles),
+        #'pre-analysis/normalization.txt',
+        #expand('pre-analysis/{sample}/normalized_files/{sample}.treat.pileup.SpikeIn_scaled.bigWig', sample=non_gst),
+        #'pre-analysis/normalized_bigwigs/',
+        expand("pre-analysis/ucsc/" + config["ref"]["build"] + "/{sample}.bw", sample=samples),
+        expand("pre-analysis/ucsc/{file}",file= [config["ref"]["build"] + "/" + "trackDb.txt","genomes.txt","hub.txt"]),
+        #"pre-analysis/alignment_stats.csv",
+        # #expand("pre-analysis/{sample}/bowtie2/aligned.primary.rmdupAndOverlap.bam", sample=Sample)
+        # #expand("{sample}/bigWig/{sample}_{strand}.bw", sample = Sample, strand = ["forward","reverse"]),
+        # macs_output(Sample)
