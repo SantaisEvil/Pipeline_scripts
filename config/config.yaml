@@ -1,0 +1,25 @@
+ref:
+    #Ensemble species name
+    species: drosophila
+    #Genome build
+    build: "bdgp6"
+    #Blaclisted regions that should be excluded from the analysis.
+    blacklist: "/media/asangani2/scripts/workflows/resources/hg19/hg19-blacklist.v2.bed"
+    #Genome bowtie2 index
+    bowtie2: "/media/asangani2/scripts/workflows/resources/BDGP6/BDGP6"
+    ##Genome bwa index
+    bwa: "/media/asangani2/scripts/workflows/resources/hg19/BWA/GRCh37.p13.genome.fa"
+    ##Genome files of STAR
+    star: "/media/asangani2/scripts/workflows/resources/hg19/STAR"
+    ##Some contaminated regions
+    bedsToRemove: [/media/asangani2/scripts/workflows/resources/hg19/hg19_trnas.bed, /media/asangani2/scripts/workflows/resources/hg19/lcmt1-nsd2.bed]
+macs:
+    #Broad marks based on encode and literature
+    broad: ["H3F3A", "H3K27ME3", "H3K36ME3","H3K36ME2", "H3K4ME1", "H3K79ME2", "H3K9ME1", "H3K9ME2", "H4K20ME1", "MED1", "BRD4"]
+    #Narrow marks based on encode and literature
+    narrow: ["H2AFZ", "H3AC", "H3K27AC", "H3K4ME2", "H3K4ME3", "H3K9AC", "AR"]
+    #q-val threshold for broad peak calling
+    broad_cutoff: 0.1
+    #q-val threhold for narrow peak calling
+    narrow_cutoff: 0.05
+

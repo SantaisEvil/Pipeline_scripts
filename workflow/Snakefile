@@ -1,0 +1,33 @@
+import os
+import glob
+
+configfile: "/media/asangani2/scripts/workflows/chipseq-workflow/config/config.yaml"
+include: "rules/mapping.smk"
+include: "rules/qc.smk"
+include: "rules/filtering.smk"
+include: "rules/bamToBw.smk"
+include: "rules/macs.smk"
+
+
+ruleorder: fastqc > bowtie2_PE > assembleStats
+
+
+Sample,Read = glob_wildcards("data/{sample}_{read}.fastq.gz")
+
+AlignmentFiles = ["unfiltered_aligned.sam","Aligned.sortedByCoord.out.bam","unfiltered_aligned_stats.tsv","dupMetrics.tsv","dupMetricsFiltered.tsv","aligned_markDup.bam", "aligned.primary.rmdup.bam", "aligned.primary.rmdup.bam.bai"]
+
+rule all:
+    input:
+        # expand("pre-analysis/{sample}/fastqc/{sample}_{read}_fastqc.{extension}", sample=Sample,read=Read,extension=["zip","html"]),
+        expand("pre-analysis/{sample}/bowtie2/{file}", sample=Sample, file = AlignmentFiles ),
+        # expand("pre-analysis/ucsc/" + config["ref"]["build"] + "/{sample}.bw", sample=Sample),
+        # expand("pre-analysis/ucsc/{file}",file= [config["ref"]["build"] + "/" + "trackDb.txt","genomes.txt","hub.txt"]),
+        # "pre-analysis/alignment_stats.csv",
+        # expand("pre-analysis/{sample}/bowtie2/aligned.primary.rmdupAndOverlap.bam", sample=Sample)
+        # expand("{sample}/bigWig/{sample}_{strand}.bw", sample = Sample, strand = ["forward","reverse"]),
+        # macs_output(Sample)
+        
+        
+
+
+
