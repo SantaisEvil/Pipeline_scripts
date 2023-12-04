@@ -15,7 +15,7 @@ rule bamToBw_forward:
         "{sample}/logs/BigWig.log"
 
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         "bamCoverage {params.main} -bl {params.blacklist} -b {input} -o {output}  -p {threads} 2> {log} "
@@ -34,7 +34,7 @@ rule bamToBw_reverse:
         "{sample}/logs/BigWig.log"
 
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         "bamCoverage {params.main} -bl {params.blacklist} -b {input} -o {output}  -p {threads} 2> {log} "
@@ -54,7 +54,7 @@ rule bamToBw:
         "pre-analysis/{sample}/logs/BigWig.log"
 
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         "bamCoverage {params.main} -bl {params.blacklist} -b {input} -o {output}  -p {threads}  > {log} "
@@ -68,6 +68,7 @@ rule make_hub:
     params:
         bwDir= "pre-analysis/ucsc/" + config["ref"]["build"],
         build = config["ref"]["build"]
-
+    conda:
+        'analysis'
     script:
         "../scripts/make_trackDB.py"

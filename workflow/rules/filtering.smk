@@ -8,8 +8,6 @@ rule markDup:
         samtools="-ASO=coordinate --TAGGING_POLICY All"
     threads: 4
 
-    conda:
-        "ngsmo"
     log:
         "pre-analysis/{sample}/logs/MarkDuplicates.log"
 
@@ -27,8 +25,6 @@ rule markDupFiltered:
         samtools="-ASO=coordinate --TAGGING_POLICY All"
     threads: 4
 
-    conda:
-        "ngsmo"
     log:
         "pre-analysis/{sample}/logs/MarkDuplicates.log"
 
@@ -46,7 +42,7 @@ rule samtools:
         bwa = "-M",
         index = config["ref"]["bowtie2"]
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         """
@@ -64,7 +60,7 @@ rule samToBamSorted:
     threads: 4
 
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         "samtools {params.samtools} -@ {threads}  -o {output.bamFile}  {input.samFile} "
@@ -81,7 +77,7 @@ rule filterBam:
     threads: 4
 
     conda:
-        "sambamba"
+        "ngs"
 
     shell:
         """
@@ -89,25 +85,25 @@ rule filterBam:
         sambamba {params.index} -t {threads} {output.filteredBam} {output.index}
         
         """
-rule removeOverlap:
-    input:
-        bamFile = "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam",
-        bedsToRemove = config["ref"]["bedsToRemove"]
+# rule removeOverlap:
+#     input:
+#         bamFile = "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam",
+#         bedsToRemove = config["ref"]["bedsToRemove"]
 
-    output:
-        filteredBam="pre-analysis/{sample}/bowtie2/aligned.primary.rmdupAndOverlap.bam"
-        # index="pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam.bai"
-    params:
-        "-v"
-    threads: 4
+#     output:
+#         filteredBam="pre-analysis/{sample}/bowtie2/aligned.primary.rmdupAndOverlap.bam"
+#         # index="pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam.bai"
+#     params:
+#         "-v"
+#     threads: 4
 
-    conda:
-        "ngsmo"
+#     conda:
+#         "ngs"
 
-    shell:
-        """
-        bedtools intersect -a {input.bamFile} -b {input.bedsToRemove} {params} > {output} 
+#     shell:
+#         """
+#         bedtools intersect -a {input.bamFile} -b {input.bedsToRemove} {params} > {output} 
         
-        """
+#         """
 
 

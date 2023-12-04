@@ -15,11 +15,11 @@ for (i in 1:length(files)){
 
   filename <- basename(files[i])
   
-  if (filename != "ucsc") {
+  if (filename != "ucsc" & filename != 'normalization.txt' & filename != 'normalized_files') {
     sample_name <- unlist(strsplit(filename,"_"))[[1]]
 
     
-    text_file <- read.delim(paste0(files[i],"/bowtie2/unfiltered_aligned.txt") ,sep ="", header = F)
+    text_file <- read.delim(paste0(files[i],"/bowtie2_dros/unfiltered_aligned.txt") ,sep ="", header = F)
 
 
     seq_depth <- text_file[1,1]

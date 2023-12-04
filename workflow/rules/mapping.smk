@@ -4,8 +4,8 @@ rule bowtie2_PE:
     priority: 2
 
     input:
-        r1 = "data/{sample}_R1.fastq.gz",
-        r2 = "data/{sample}_R2.fastq.gz"
+        r1 = "data_trimmed/{sample}_R1.atria.fastq.gz",
+        r2 = "data_trimmed/{sample}_R2.atria.fastq.gz"
         
         
     output:
@@ -13,12 +13,12 @@ rule bowtie2_PE:
     log:
         alignment_stats = "pre-analysis/{sample}/bowtie2/unfiltered_aligned.txt",
         met = "pre-analysis/{sample}/logs/bowtie2.txt"
-    threads: 12
+    threads: 8
     params:
         bowtie2 = "bowtie2 --local --no-mixed --no-discordant ",
         index = config["ref"]["bowtie2"]
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         """
@@ -29,9 +29,7 @@ rule bowtie2_SE:
     priority: 2
 
     input:
-        "data/{sample}_R1.fastq.gz"
-        
-        
+        "data/{sample}.fastq.gz"
     output:
         aligned_sam="pre-analysis/{sample}/bowtie2/unfiltered_aligned.sam"
     log:
@@ -41,7 +39,7 @@ rule bowtie2_SE:
         bowtie2 = "bowtie2 --no-mixed --no-discordant -p",
         index = config["ref"]["bowtie2"]
     conda:
-        "ngsmo"
+        "ngs"
 
     shell:
         """
@@ -49,56 +47,56 @@ rule bowtie2_SE:
         
         """
 
-rule bwa:
-    priority: 2
+# rule bwa:
+#     priority: 2
     
-    input:
-        r1 = "data/{sample}_R1.fastq.gz",
-        r2 = "data/{sample}_R2.fastq.gz"
+#     input:
+#         r1 = "data/{sample}_R1.fastq.gz",
+#         r2 = "data/{sample}_R2.fastq.gz"
         
-    output:
-        aligned_sam="pre-analysis/{sample}/bwa/unfiltered_aligned.sam"
-    threads: 5
-    params:
-        bwa = "-M",
-        index = config["ref"]["bwa"]
-    conda:
-        "ngsmo"
+#     output:
+#         aligned_sam="pre-analysis/{sample}/bwa/unfiltered_aligned.sam"
+#     threads: 5
+#     params:
+#         bwa = "-M",
+#         index = config["ref"]["bwa"]
+#     conda:
+#         "ngs"
 
-    shell:
-        """
-        bwa mem {params.index} {input.r1} {input.r2} -t {threads} -M -S  > {output.aligned_sam} 
-        """
-rule STAR:
-    priority: 2
+#     shell:
+#         """
+#         bwa mem {params.index} {input.r1} {input.r2} -t {threads} -M -S  > {output.aligned_sam} 
+#         """
+# rule STAR:
+#     priority: 2
     
-    input:
-        r1 = "data/{sample}_R1.fastq.gz",
-        r2 = "data/{sample}_R2.fastq.gz"
+#     input:
+#         r1 = "data/{sample}_R1.fastq.gz",
+#         r2 = "data/{sample}_R2.fastq.gz"
 
-    output:
-        aligned_bam="pre-analysis/{sample}/STAR/Aligned.sortedByCoord.out.bam"
+#     output:
+#         aligned_bam="pre-analysis/{sample}/STAR/Aligned.sortedByCoord.out.bam"
 
-    log:
-        detailed_log="pre-analysis/{sample}/STAR/Log.out",
-        mapping_summary="pre-analysis/{sample}/STAR/Log.final.out"
+#     log:
+#         detailed_log="pre-analysis/{sample}/STAR/Log.out",
+#         mapping_summary="pre-analysis/{sample}/STAR/Log.final.out"
 
     
-    threads: 8
+#     threads: 8
 
-    params:
-        star = "--outSAMtype BAM SortedByCoordinate \
-        --alignEndsType EndToEnd --alignIntronMax 1 \
-        --outSAMattributes NH NM MD --outSAMunmapped Within --outSAMmapqUnique 50 --limitBAMsortRAM 24000000000 \
-        --readFilesCommand zcat",
+#     params:
+#         star = "--outSAMtype BAM SortedByCoordinate \
+#         --alignEndsType EndToEnd --alignIntronMax 1 \
+#         --outSAMattributes NH NM MD --outSAMunmapped Within --outSAMmapqUnique 50 --limitBAMsortRAM 24000000000 \
+#         --readFilesCommand zcat",
         
-        index = config["ref"]["star"],
-        outdir = "pre-analysis/{sample}/STAR/"
-    conda:
-        "ngsmo"
+#         index = config["ref"]["star"],
+#         outdir = "pre-analysis/{sample}/STAR/"
+#     conda:
+#         "ngs"
 
-    shell:
-        """
-        STAR --genomeDir {params.index} --readFilesIn {input.r1} {input.r2} --runThreadN {threads} {params.star} --outFileNamePrefix {params.outdir}
+#     shell:
+#         """
+#         STAR --genomeDir {params.index} --readFilesIn {input.r1} {input.r2} --runThreadN {threads} {params.star} --outFileNamePrefix {params.outdir}
     
-        """
+#         """

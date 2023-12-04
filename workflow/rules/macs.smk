@@ -7,7 +7,7 @@ rule macs_narrow:
         multiext("pre-analysis/{sample}/macs/narrow/NA_","peaks.narrowPeak","summits.bed","peaks.xls")
     
     params:
-        macs="callpeak -q 0.05 -f BAMPE -g hs -c pre-analysis/IgG/bowtie2/aligned.primary.rmdup.bam",
+        macs="callpeak -q 0.05 -f AUTO -g hs -c /media/asangani2/NNMT_project/chipseq/2023-04-03/pre-analysis/IgG_S22/bowtie2_spikein/IgG_human.bam",
         outdir="pre-analysis/{sample}/macs/narrow",
         blacklist= config["ref"]["blacklist"]        
 
@@ -18,7 +18,7 @@ rule macs_narrow:
 
 
     conda:
-        "macs3"
+        "ngs"
 
     shell:
         """
@@ -37,7 +37,7 @@ rule macs_broad:
         multiext("pre-analysis/{sample}/macs/broad/NA_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
 
     params:
-        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f BAMPE -c pre-analysis/IgG/bowtie2/aligned.primary.rmdup.bam",
+        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f BAMPE -c /media/asangani2/NNMT_project/chipseq/2023-04-03/pre-analysis/IgG_S22/bowtie2_spikein/IgG_human.bam",
         outdir="pre-analysis/{sample}/macs/broad",
         blacklist= config["ref"]["blacklist"]
 
@@ -47,7 +47,7 @@ rule macs_broad:
         "pre-analysis/{sample}/logs/macs3.log"
 
     conda:
-        "macs3"
+        "ngs"
 
     shell:
         """

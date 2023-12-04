@@ -4,14 +4,14 @@ rule fastqc:
     priority: 1
     
     input:
-        rawread="data/{sample}_{read}.fastq.gz"
+        rawread="data_trimmed/{sample}_{read}.atria.fastq.gz"
     output:
-        zip ="pre-analysis/{sample}/fastqc/{sample}_{read}_fastqc.zip",
-        html="pre-analysis/{sample}/fastqc/{sample}_{read}_fastqc.html"
-    threads: 1
+        zip ="pre-analysis/{sample}/fastqc/{sample}_{read}.atria_fastqc.zip",
+        html="pre-analysis/{sample}/fastqc/{sample}_{read}.atria_fastqc.html"
+    threads: 2
     
     conda:
-        "ngsmo"
+        "ngs"
 
     params:
         path="pre-analysis/{sample}/fastqc/"
