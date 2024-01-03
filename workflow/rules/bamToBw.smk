@@ -62,11 +62,11 @@ rule bamToBw:
 #Create UCSC hub, dump to server.
 rule make_hub:   
     output:
-        trackDb = "pre-analysis/ucsc/" + config["ref"]["build"] + "/" + "trackDb.txt",
+        trackDb = "pre-analysis/ucsc/" + 'lncap' + "/" + "trackDb.txt",
         hub = "pre-analysis/ucsc/hub.txt",
         genomes = "pre-analysis/ucsc/genomes.txt"
     params:
-        bwDir= "pre-analysis/ucsc/" + config["ref"]["build"],
+        bwDir= "pre-analysis/ucsc/" + 'lncap',
         build = config["ref"]["build"]
     conda:
         'analysis'

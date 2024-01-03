@@ -28,7 +28,10 @@ for _nn, bwfile in enumerate(bwfiles):
     fp.write('type bigWig \n')
     fp.write('visibility full \n')
     fp.write('shortLabel '+bwfile+'\n')
-    fp.write('color '+hex_to_rgb(colors[_nn])+'\n\n')
+    if _nn >= len(colors):
+        fp.write('color '+hex_to_rgb(colors[_nn-len(colors)])+'\n\n')
+    else:
+        fp.write('color '+hex_to_rgb(colors[_nn])+'\n\n')
 fp.close()
 
 
@@ -38,7 +41,7 @@ fp.write('hub ChIP-Seq_' + str(today) +'\n')
 fp.write('shortLabel ChIP-Seq hub\n')
 fp.write('longLabel ChIP-Seq hub\n')
 fp.write('genomesFile genomes.txt\n')
-fp.write('email mohammed.alhusayan@pennmedicine.upenn.edu\n')
+fp.write('email sharanv@seas.upenn.edu\n')
 fp.write('descriptionUrl none')
 fp.close()
 

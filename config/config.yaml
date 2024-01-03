@@ -5,6 +5,10 @@ ref:
     build: "hg38"
     #Blaclisted regions that should be excluded from the analysis.
     blacklist: "/media/asangani2/scripts/workflows/resources/HG38/hg38-blacklist.v2.bed"
+    #Spike-in build
+    spikein: "dm6"
+    #Spike-in indexes
+    bowtie2_spikein : '/media/asangani2/resources/dm6/dm6_bt2/dm6'
     #Genome bowtie2 index
     bowtie2: "/media/asangani2/scripts/workflows/resources/HG38/BOWTIE/hg38/hg38"
     #bowtie2: "/media/asangani2/resources/hg38_dm6/hg38_dm6"

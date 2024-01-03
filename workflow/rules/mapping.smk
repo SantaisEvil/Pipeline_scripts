@@ -4,8 +4,8 @@ rule bowtie2_PE:
     priority: 2
 
     input:
-        r1 = "data_trimmed/{sample}_R1.atria.fastq.gz",
-        r2 = "data_trimmed/{sample}_R2.atria.fastq.gz"
+        r1 = "data/{sample}_R1.fastq.gz",
+        r2 = "data/{sample}_R2.fastq.gz"
         
         
     output:
@@ -15,7 +15,7 @@ rule bowtie2_PE:
         met = "pre-analysis/{sample}/logs/bowtie2.txt"
     threads: 8
     params:
-        bowtie2 = "bowtie2 --local --no-mixed --no-discordant ",
+        bowtie2 = "bowtie2 --local --no-discordant ",
         index = config["ref"]["bowtie2"]
     conda:
         "ngs"
