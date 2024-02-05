@@ -7,7 +7,7 @@ rule macs_narrow:
         multiext("pre-analysis/{sample}/macs/narrow/NA_","peaks.narrowPeak","summits.bed","peaks.xls")
     
     params:
-        macs="callpeak -q 0.05 -f AUTO -g hs -c /media/asangani1/NSD2_Project/2023-11-28/pre-analysis/LNCaP_IgG/bowtie2/aligned.primary.rmdup.bam",
+        macs="callpeak -q 0.05 -f AUTO -g hs -c /media/asangani1/NSD2_Project/2023-11-28/pre-analysis/LNCaP_Input_Y1092A/bowtie2/aligned.primary.rmdup.bam",
         outdir="pre-analysis/{sample}/macs/narrow",
         blacklist= config["ref"]["blacklist"]        
 
@@ -69,7 +69,6 @@ def macs_output(Sample):
                 if mark in i.upper():
                     output = multiext(f"pre-analysis/{i}/macs/broad/NA_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
                     mode = "broad"
-                    
                     break
                 else:
                     output =  multiext(f"pre-analysis/{i}/macs/narrow/NA_","peaks.narrowPeak","summits.bed","peaks.xls")

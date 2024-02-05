@@ -16,11 +16,17 @@ ref:
     bwa: "/media/asangani2/scripts/workflows/resources/hg19/BWA/GRCh37.p13.genome.fa"
     ##Genome files of STAR
     star: "/media/asangani2/scripts/workflows/resources/hg19/STAR"
+    ##Fasta file
+    fasta: "/media/asangani2/resources/hg38/fasta/hg38.fa"
+    ##Experiments
+    exps: {'Cas9':['BrA'],'WT':['TM','Y1092A']}
+    ##Cell lines
+    cells: ['LNCaP','VCaP']
     ##Some contaminated regions
     #bedsToRemove: [/media/asangani2/scripts/workflows/resources/hg19/hg19_trnas.bed, /media/asangani2/scripts/workflows/resources/hg19/lcmt1-nsd2.bed]
 macs:
     #Broad marks based on encode and literature
-    broad: ["H3F3A", "H3K27ME3", "H3K36ME3","H3K36ME2", "H3K4ME1", "H3K79ME2", "H3K9ME1", "H3K9ME2", "H4K20ME1", "MED1", "BRD4"]
+    broad: ["H3F3A", "H3K27ME3", "H3K36ME3","H3K36ME2", "H3K4ME1", "H3K79ME2", "H3K9ME1", "H3K9ME2", "H4K20ME1", "MED1", "BRD4", "RNASEH1"]
     #Narrow marks based on encode and literature
     narrow: ["H2AFZ", "H3AC", "H3K27AC", "H3K4ME2", "H3K4ME3", "H3K9AC", "AR"]
     #q-val threshold for broad peak calling

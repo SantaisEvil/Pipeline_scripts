@@ -25,8 +25,8 @@ rule assembleStats:
         "pre-analysis/alignment_stats.csv"
     params:
         files = "pre-analysis/*",
-        dup_files = "pre-analysis/*/bowtie2/dupMetrics.tsv",
-        rmdup_files = "pre-analysis/*/bowtie2/dupMetricsFiltered.tsv"
+        #dup_files = "pre-analysis/*/bowtie2_dros/dupMetrics.tsv",
+        #rmdup_files = "pre-analysis/*/bowtie2_dros/dupMetricsFiltered.tsv"
 
     script:
         "../scripts/bowtie_alignment_stats.R"

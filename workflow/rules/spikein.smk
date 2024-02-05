@@ -4,97 +4,97 @@ samples = list(set(samples))
 non_gst = [x for x in samples if 'gst' not in x.lower()]
 
 
-# rule bowtie2_PE_dros:
-#     input:
-#         r1 = "data_trimmed/{sample}_R1.atria.fastq.gz",
-#         r2 = "data_trimmed/{sample}_R2.atria.fastq.gz"
+rule bowtie2_PE_dros:
+    input:
+        r1 = "data_trimmed/{sample}_R1.atria.fastq.gz",
+        r2 = "data_trimmed/{sample}_R2.atria.fastq.gz"
         
         
-#     output:
-#         aligned_sam="pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"
-#     log:
-#         alignment_stats = "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.txt",
-#         met = "pre-analysis/{sample}/logs/bowtie2.txt"
-#     threads: 8
-#     params:
-#         bowtie2 = "bowtie2 --local --no-mixed --no-discordant ",
-#         index = config["ref"]["bowtie2_spikein"]
-#     conda:
-#         "ngs"
+    output:
+        aligned_sam="pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"
+    log:
+        alignment_stats = "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.txt",
+        met = "pre-analysis/{sample}/logs/bowtie2.txt"
+    threads: 8
+    params:
+        bowtie2 = "bowtie2 --local --no-mixed --no-discordant ",
+        index = config["ref"]["bowtie2_spikein"]
+    conda:
+        "ngs"
 
-#     shell:
-#         """
-#         {params.bowtie2} -p {threads} --met-file {log.met} -x {params.index} -1 {input.r1} -2 {input.r2} -S {output.aligned_sam}  &> {log.alignment_stats}
+    shell:
+        """
+        {params.bowtie2} -p {threads} --met-file {log.met} -x {params.index} -1 {input.r1} -2 {input.r2} -S {output.aligned_sam}  &> {log.alignment_stats}
         
-#         """
+        """
 
 
-# rule markDup_dros:
-#     input:
-#         bamFile= "pre-analysis/{sample}/bowtie2_dros/Aligned.sortedByCoord.out.bam"     
-#     output:
-#         bamMarked= "pre-analysis/{sample}/bowtie2_dros/aligned_markDup.bam",
-#         dupStats="pre-analysis/{sample}/bowtie2_dros/dupMetrics.tsv" 
-#     params:
-#         samtools="-ASO=coordinate --TAGGING_POLICY All"
-#     threads: 4
+rule markDup_dros:
+    input:
+        bamFile= "pre-analysis/{sample}/bowtie2_dros/Aligned.sortedByCoord.out.bam"     
+    output:
+        bamMarked= "pre-analysis/{sample}/bowtie2_dros/aligned_markDup.bam",
+        dupStats="pre-analysis/{sample}/bowtie2_dros/dupMetrics.tsv" 
+    params:
+        samtools="-ASO=coordinate --TAGGING_POLICY All"
+    threads: 4
 
-#     log:
-#         "pre-analysis/{sample}/logs/MarkDuplicates.log"
+    log:
+        "pre-analysis/{sample}/logs/MarkDuplicates.log"
 
-#     shell:
-#         "gatk MarkDuplicates -I {input.bamFile} -O  {output.bamMarked} -M {output.dupStats} 2> {log}"
+    shell:
+        "gatk MarkDuplicates -I {input.bamFile} -O  {output.bamMarked} -M {output.dupStats} 2> {log}"
 
 
-# rule markDupFiltered_dros:
-#     input:
-#         bamFile= "pre-analysis/{sample}/bowtie2_dros/aligned_markDup.bam"     
-#     output:
-#         bamMarked= "pre-analysis/{sample}/bowtie2_dros/aligned_markDupFiltered.bam",
-#         dupStats="pre-analysis/{sample}/bowtie2_dros/dupMetricsFiltered.tsv" 
-#     params:
-#         samtools="-ASO=coordinate --TAGGING_POLICY All"
-#     threads: 4
+rule markDupFiltered_dros:
+    input:
+        bamFile= "pre-analysis/{sample}/bowtie2_dros/aligned_markDup.bam"     
+    output:
+        bamMarked= "pre-analysis/{sample}/bowtie2_dros/aligned_markDupFiltered.bam",
+        dupStats="pre-analysis/{sample}/bowtie2_dros/dupMetricsFiltered.tsv" 
+    params:
+        samtools="-ASO=coordinate --TAGGING_POLICY All"
+    threads: 4
 
-#     log:
-#         "pre-analysis/{sample}/logs/MarkDuplicates.log"
+    log:
+        "pre-analysis/{sample}/logs/MarkDuplicates.log"
 
-#     shell:
-#         "gatk MarkDuplicates -I {input.bamFile} -O  {output.bamMarked} -M {output.dupStats} 2> {log}"
+    shell:
+        "gatk MarkDuplicates -I {input.bamFile} -O  {output.bamMarked} -M {output.dupStats} 2> {log}"
 
-# rule samtools_dros:
-#     input:
-#         "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"
+rule samtools_dros:
+    input:
+        "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"
         
-#     output:
-#         "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned_stats.tsv"
-#     threads: 4
-#     params:
-#         bwa = "-M",
-#         index = config["ref"]["bowtie2"]
-#     conda:
-#         "ngs"
+    output:
+        "pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned_stats.tsv"
+    threads: 4
+    params:
+        bwa = "-M",
+        index = config["ref"]["bowtie2"]
+    conda:
+        "ngs"
 
-#     shell:
-#         """
-#         samtools flagstat -O tsv -@ {threads} {input} > {output}
+    shell:
+        """
+        samtools flagstat -O tsv -@ {threads} {input} > {output}
         
-#         """
+        """
 
-# rule samToBamSorted_dros:
-#     input:
-#         samFile="pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"         
-#     output:
-#         bamFile= "pre-analysis/{sample}/bowtie2_dros/Aligned.sortedByCoord.out.bam"
-#     params:
-#         samtools="sort --write-index -O BAM"
-#     threads: 4
+rule samToBamSorted_dros:
+    input:
+        samFile="pre-analysis/{sample}/bowtie2_dros/unfiltered_aligned.sam"         
+    output:
+        bamFile= "pre-analysis/{sample}/bowtie2_dros/Aligned.sortedByCoord.out.bam"
+    params:
+        samtools="sort --write-index -O BAM"
+    threads: 4
 
-#     conda:
-#         "ngs"
+    conda:
+        "ngs"
 
-#     shell:
-#         "samtools {params.samtools} -@ {threads}  -o {output.bamFile}  {input.samFile} "
+    shell:
+        "samtools {params.samtools} -@ {threads}  -o {output.bamFile}  {input.samFile} "
 
 # rule filterBam_dros:
 #     input:
@@ -117,44 +117,44 @@ non_gst = [x for x in samples if 'gst' not in x.lower()]
         
 #         """
 
-# rule bamToBw_dros:
-#     input:
-#         "pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam"      
-#     output:
-#         "pre-analysis/ucsc/" + config["ref"]["build"] + "/" + "{sample}.bw"
-#     params:
-#         main="--binSize 1 --normalizeUsing CPM --centerReads",
-#         blacklist= config["ref"]["blacklist"]
-#     threads: 4
+rule bamToBw_dros:
+    input:
+        "pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam"      
+    output:
+        "pre-analysis/ucsc/" + config["ref"]["build"] + "/" + "{sample}.bw"
+    params:
+        main="--binSize 1 --normalizeUsing CPM --centerReads",
+        blacklist= config["ref"]["blacklist"]
+    threads: 8
 
-#     log:
-#         "pre-analysis/{sample}/logs/BigWig.log"
+    log:
+        "pre-analysis/{sample}/logs/BigWig.log"
 
-#     conda:
-#         "ngs"
+    conda:
+        "ngs"
 
-#     shell:
-#         "bamCoverage {params.main} -bl {params.blacklist} -b {input} -o {output}  -p {threads}  > {log} "
+    shell:
+        "bamCoverage {params.main} -bl {params.blacklist} -b {input} -o {output}  -p {threads}  > {log} "
 
-# rule split_bam:
-#     input:
-#         'pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam'
-#     output:
-#         'pre-analysis/{sample}/spiker/split.report.txt'
-#     threads:
-#         4
-#     params:
-#         prefix = 'pre-analysis/{sample}/spiker/split'
-#     conda:
-#         'spiker'
-#     shell:
-#         'split_bam.py --threads {threads} -i {input} -o {params.prefix}'
+rule split_bam:
+    input:
+        'pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam'
+    output:
+        'pre-analysis/{sample}/spiker/split.report.txt'
+    threads:
+        4
+    params:
+        prefix = 'pre-analysis/{sample}/spiker/split'
+    conda:
+        'spiker'
+    shell:
+        'split_bam.py --threads {threads} -i {input} -o {params.prefix}'
 
 rule calc_stats:
     input:
-        expand('pre-analysis2/{sample}/spiker/split.report.txt',sample=samples)
+        expand('pre-analysis/{sample}/spiker/split.report.txt',sample=samples)
     output:
-        'pre-analysis2/normalization.txt'
+        'pre-analysis/normalization.txt'
     threads:
         1
     script:
@@ -218,12 +218,12 @@ rule assembleStats_dros:
 rule norm_bigwigs:
     input:
         norm_file = 'pre-analysis/normalization.txt',
-        bam_file = "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam"      
+        bam_file = "pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam"      
     output:
-        "pre-analysis/ucsc_norm/" + config["ref"]["build"] + "/" + "{sample}.bw"
+        "pre-analysis/ucsc_norm_2/" + config["ref"]["build"] + "/" + "{sample}.bw"
     params:
         blacklist= config["ref"]["blacklist"]
-    threads: 4
+    threads: 8
     log:
         "pre-analysis/{sample}/logs/BigWig_norm.log"
 
@@ -231,56 +231,72 @@ rule norm_bigwigs:
         "ngs"
 
     script:
+        '../scripts/spiker_norm.py'
+
+# rule samtools_view:
+#     input:
+#         bam_file = 'pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam',
+#         norm_file = 'pre-analysis/normalization.txt'
+#     output:
+#         'pre-analysis/{sample}/normalized_bam/scaled.bam'
+#     params:
+#         ctrl_bam = 'pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam',
+#         blacklist= config["ref"]["blacklist"]
+#     threads:
+#         4
+#     conda:
+#         'ngs'
+#     script:
+#         '../scripts/samtools_norm.py'   
+
+rule bamcompare_ct:
+    input:
+        bam_file = 'pre-analysis/{sample}/normalized_bam/scaled.bam',
+        norm_file = 'pre-analysis/normalization.txt'
+    output:
+        'pre-analysis/ucsc_sam_view_ct/' + config["ref"]["build"] + "/" + "{sample}.bw"
+    params:
+        ctrl_bam = 'pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam',
+        blacklist= config["ref"]["blacklist"]
+    log:
+        "pre-analysis/{sample}/logs/BigWig_norm.log"
+    threads:
+        4
+    conda:
+        'ngs'
+    script:
         '../scripts/samtools_norm.py'
 
-# rule bamcompare_ct:
-#     input:
-#         bam_file = 'pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam',
-#         norm_file = 'pre-analysis/normalization.txt'
-#     output:
-#         'pre-analysis/ucsc_compare_ct/' + config["ref"]["build"] + "/" + "{sample}.bw"
-#     params:
-#         ctrl_bam = 'pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam',
-#         blacklist= config["ref"]["blacklist"]
-#     log:
-#         "pre-analysis/{sample}/logs/BigWig_norm.log"
-#     threads:
-#         8
-#     conda:
-#         'ngs'
-#     script:
-#         '../scripts/samtools_norm.py'
+rule bamcompare_dmso:
+    input:
+        bam_file = 'pre-analysis/{sample}/normalized_bam/scaled.bam',
+        norm_file = 'pre-analysis/normalization.txt'
+    output:
+        'pre-analysis/ucsc_sam_view_dmso/' + config["ref"]["build"] + "/" + "{sample}.bw"
+    params:
+        ctrl_bam = 'pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam',
+        blacklist= config["ref"]["blacklist"]
+    log:
+        "pre-analysis/{sample}/logs/BigWig_norm.log"
+    threads:
+        4
+    conda:
+        'ngs'
+    script:
+        '../scripts/samtools_norm.py'
 
-# rule bamcompare_dmso:
-#     input:
-#         bam_file = 'pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam',
-#         norm_file = 'pre-analysis/normalization.txt'
-#     output:
-#         'pre-analysis/ucsc_compare_dmso/' + config["ref"]["build"] + "/" + "{sample}.bw"
-#     params:
-#         ctrl_bam = 'pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam',
-#         blacklist= config["ref"]["blacklist"]
-#     log:
-#         "pre-analysis/{sample}/logs/BigWig_norm.log"
-#     threads:
-#         8
-#     conda:
-#         'ngs'
-#     script:
-#         '../scripts/samtools_norm.py'
-
-# rule make_hub_norm:   
-#     output:
-#         trackDb = "pre-analysis/ucsc_norm/" + config["ref"]["build"] + "/" + "trackDb.txt",
-#         hub = "pre-analysis/ucsc_norm/hub.txt",
-#         genomes = "pre-analysis/ucsc_norm/genomes.txt"
-#     params:
-#         bwDir= "pre-analysis/ucsc_norm/" + config["ref"]["build"],
-#         build = config["ref"]["build"]
-#     conda:
-#         'analysis'
-#     script:
-#         "../scripts/make_trackDB.py"
+rule make_hub_norm:   
+    output:
+        trackDb = "pre-analysis/ucsc_norm_2/" + config["ref"]["build"] + "/" + "trackDb.txt",
+        hub = "pre-analysis/ucsc_norm_2/hub.txt",
+        genomes = "pre-analysis/ucsc_norm_2/genomes.txt"
+    params:
+        bwDir= "pre-analysis/ucsc_norm_2/" + config["ref"]["build"],
+        build = config["ref"]["build"]
+    conda:
+        'analysis'
+    script:
+        "../scripts/make_trackDB.py"
 
 def macs_output_spikein(Sample):
     modes = []
@@ -291,31 +307,74 @@ def macs_output_spikein(Sample):
             for mark in config["macs"]["broad"]:
                 if mark in i.upper():
                     if 'CT' in i.upper():
-                        output = multiext(f"pre-analysis/{i}/macs/broad/CT_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
+                        output = multiext(f"pre-analysis/{i}/macs_sam/broad/CT_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
                     elif 'DMSO' in i.upper():
-                        output = multiext(f"pre-analysis/{i}/macs/broad/DMSO_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
+                        output = multiext(f"pre-analysis/{i}/macs_sam/broad/DMSO_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
                     mode = "broad"
                     break
                 else:
                     if 'CT' in i.upper():
-                        output =  multiext(f"pre-analysis/{i}/macs/narrow/CT_","peaks.narrowPeak","summits.bed","peaks.xls")
+                        output =  multiext(f"pre-analysis/{i}/macs_sam/narrow/CT_","peaks.narrowPeak","summits.bed","peaks.xls")
                     elif 'DMSO' in i.upper():
-                        output =  multiext(f"pre-analysis/{i}/macs/narrow/DMSO_","peaks.narrowPeak","summits.bed","peaks.xls")
+                        output =  multiext(f"pre-analysis/{i}/macs_sam/narrow/DMSO_","peaks.narrowPeak","summits.bed","peaks.xls")
                     mode = "narrow"
             modes.append(output)
             print(f"{i} is {mode}")
     print(modes)
     return(modes)
 
+## This is for a single control across multiple samples
+
+
+# rule spiker_peak_calling:
+#     input:
+#         norm_file = 'pre-analysis/normalization.txt',
+#         bam_file = "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam"      
+#     output:
+#         directory('pre-analysis/{sample}/spiker/')
+#     threads: 
+#         4
+#     log:
+#         "pre-analysis/{sample}/logs/spiker.log"
+
+#     conda:
+#         "spiker"
+
+#     script:
+#         '../scripts/spiker_norm.py'
+
+## This is for control for each experiment (ex - cas9 vs ko H3K4me1)
+
+rule spiker_peak_calling:
+    input:
+        norm_file = 'pre-analysis/normalization.txt',
+        bam_file = "pre-analysis/{sample}/bowtie2_dros/aligned.primary.rmdup.bam"      
+    output:
+        directory('pre-analysis/{sample}/spiker/normalized')
+    threads: 
+        8
+    params:
+        broad = config['macs']['broad'],
+        narrow = config['macs']['narrow']
+    log:
+        "pre-analysis/{sample}/logs/spiker.log"
+
+    conda:
+        "spiker"
+
+    script:
+        '../scripts/spiker_norm.py'
+
 rule macs_broad_spikein_CT:
     input:
         "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam"
+        #"pre-analysis/{sample}/normalized_bam/scaled.bam"
     output:
-        multiext("pre-analysis/{sample}/macs/broad/CT_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
+        multiext("pre-analysis/{sample}/macs_sam/broad/CT_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
 
     params:
-        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f AUTO -n CT -c /media/asangani1/CDK7_project/2023-11-28/pre-analysis/CT_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam",
-        outdir="pre-analysis/{sample}/macs/broad",
+        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f AUTO -n CT",
+        outdir="pre-analysis/{sample}/macs_sam/broad",
         blacklist= config["ref"]["blacklist"]
 
     threads: 8
@@ -337,12 +396,13 @@ rule macs_broad_spikein_CT:
 rule macs_broad_spikein_DMSO:
     input:
         "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam"
+        #"pre-analysis/{sample}/normalized_bam/scaled.bam"
     output:
-        multiext("pre-analysis/{sample}/macs/broad/DMSO_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
+        multiext("pre-analysis/{sample}/macs_sam/broad/DMSO_","peaks.broadPeak","peaks.gappedPeak","peaks.xls")
 
     params:
-        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f AUTO -n DMSO -c /media/asangani1/CDK7_project/2023-11-28/pre-analysis/DMSO_RNAseH1_GST/bowtie2/aligned.primary.rmdup.bam",
-        outdir="pre-analysis/{sample}/macs/broad",
+        macs="callpeak --broad -g hs --broad-cutoff 0.1 -f AUTO -n DMSO",
+        outdir="pre-analysis/{sample}/macs_sam/broad",
         blacklist= config["ref"]["blacklist"]
 
     threads: 8
@@ -360,8 +420,3 @@ rule macs_broad_spikein_DMSO:
         bedtools intersect -a {params.outdir}/DMSO_peaks.broadPeak -b {params.blacklist} -v > {params.outdir}/DMSO_peaks.broadPeakFiltered
         """
 
-def macs_spikein:
-    input:
-        "pre-analysis/{sample}/bowtie2/aligned.primary.rmdup.bam"
-    output:
-        
